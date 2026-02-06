@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Hyperspeed from "../components/Hyperspeed";
 import Dock from "../components/Dock";
+import CtaButton from "../components/CtaButton";
 
 const HomeIcon = () => (
   <svg
@@ -168,8 +169,7 @@ export default function Home() {
           textAlign: "center",
           padding: "0 1.5rem",
         }}
-      >        
-
+      >
         <h1
           style={{
             fontFamily: '"Bricolage Grotesque", sans-serif',
@@ -212,6 +212,12 @@ export default function Home() {
           minutes.
         </p>
 
+        <div style={{ marginTop: "2rem", pointerEvents: "auto" }}>
+          <CtaButton
+            text="Begin Mock Interview Now"
+            onClick={() => navigate("/interview")}
+          />
+        </div>
 
         <p
           style={{
