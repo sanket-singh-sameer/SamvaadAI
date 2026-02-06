@@ -90,41 +90,22 @@ Database
 ## Installation
 
 ### Clone Repository
-git clone https://github.com/your-username/SamvaadAI.git
-cd SamvaadAI
-
-shell
-Copy code
+-git clone https://github.com/divyamsingh007/SamvaadAI.git
+-cd SamvaadAI
 
 ### Backend Setup
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
 
-bash
-Copy code
 
 Create `.env` file:
 OPENAI_API_KEY=your_api_key_here
 
-yaml
-Copy code
 
 Run backend server:
-python manage.py migrate
-python manage.py runserver
-
-shell
-Copy code
 
 ### Frontend Setup
-cd frontend
-npm install
-npm run dev
-
-yaml
-Copy code
+-cd frontend
+-npm install
+-npm run dev
 
 ---
 
