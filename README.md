@@ -66,33 +66,6 @@ This makes SamvaadAI an AI-driven practice system rather than a simple API wrapp
 
 ---
 
-## System Architecture
-
-Frontend (React)
-|
-|-- Resume Upload
-|-- Role Selection
-|-- Voice Input
-|
-Backend (Django REST Framework)
-|
-|-- Resume Parser
-|-- Skill Extraction
-|-- Question Generator
-|-- Answer Evaluator
-|
-AI Services
-|
-|-- Large Language Model
-|-- Embedding Model
-|
-Database (SQLite)
-
-yaml
-Copy code
-
----
-
 ## Technology Stack
 
 Frontend  
@@ -164,14 +137,3 @@ Copy code
 5. Answer questions using microphone  
 6. Click Finish Interview  
 7. View score and feedback  
-
----
-
-## Scoring Methodology
-
-Each answer is evaluated using:
-
-- Semantic similarity score  
-- Technical keyword matching  
-- Clarity score  
-- Confidence score  
