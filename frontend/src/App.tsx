@@ -5,6 +5,7 @@ import HowItWorks from "./pages/HowItWorks";
 import AboutUs from "./pages/AboutUs";
 import PreInterview from "./pages/PreInterview";
 import Interview from "./pages/Interview";
+import Results from "./pages/Results";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/pre-interview" element={<PreInterview />} />
       <Route path="/interview" element={<Interview />} />
+      <Route path="/results" element={<Results />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/about-us" element={<AboutUs />} />
     </Routes>
