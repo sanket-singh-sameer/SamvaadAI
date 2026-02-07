@@ -228,6 +228,7 @@ export default function PreInterview() {
 
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
+    navigate("/interview");
   };
 
   return (
@@ -316,7 +317,6 @@ export default function PreInterview() {
             </p>
           </div>
 
-          {/* Form — two-column grid on wider screens, single column on mobile */}
           <div
             style={{
               width: "100%",
@@ -326,7 +326,7 @@ export default function PreInterview() {
               gap: "1.8rem 2rem",
             }}
           >
-            {/* Resume Upload — spans full width */}
+            {" "}
             <div style={{ gridColumn: "1 / -1" }}>
               <label style={labelStyle}>Resume</label>
               <input
@@ -365,8 +365,6 @@ export default function PreInterview() {
                 </span>
               </div>
             </div>
-
-            {/* Role Selection */}
             <CustomDropdown
               label="Role *"
               placeholder="Select a role…"
@@ -374,8 +372,6 @@ export default function PreInterview() {
               value={role}
               onChange={setRole}
             />
-
-            {/* Experience Level */}
             <CustomDropdown
               label="Experience"
               placeholder="Select level…"
@@ -383,8 +379,6 @@ export default function PreInterview() {
               value={experience}
               onChange={setExperience}
             />
-
-            {/* Focus Area — spans full width */}
             <div style={{ gridColumn: "1 / -1" }}>
               <label style={labelStyle}>Focus Area</label>
               <input
@@ -401,7 +395,6 @@ export default function PreInterview() {
                 }
               />
             </div>
-
             {/* CTA — spans full width */}
             <div
               style={{
