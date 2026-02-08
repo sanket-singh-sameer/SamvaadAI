@@ -102,3 +102,90 @@ export const generateGet = async (req, res) => {
     });
   }
 };
+
+// Get all interviews for a user
+export const getUserInterviews = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId is required",
+      });
+    }
+
+    const interviews = await Interview.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: interviews,
+    });
+  } catch (error) {
+    console.error("Error fetching interviews:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching interviews",
+      error: error.message,
+    });
+  }
+};
+
+// Get a specific interview by ID
+export const getInterview = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const interview = await Interview.findById(id).lean();
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: interview,
+    });
+  } catch (error) {
+    console.error("Error fetching interview:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching interview",
+      error: error.message,
+    });
+  }
+};
+
+// Delete an interview
+export const deleteInterview = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const interview = await Interview.findByIdAndDelete(id);
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Interview deleted successfully",
+      data: interview,
+    });
+  } catch (error) {
+    console.error("Error deleting interview:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting interview",
+      error: error.message,
+    });
+  }
+};
