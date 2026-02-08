@@ -1,5 +1,7 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import CtaButton from "../components/CtaButton";
+import { getInterviewResponse } from "../services/interviewResponse.service";
 
 const FALLBACK_DATA = {
   score: 74,
@@ -81,12 +83,83 @@ const bulletText: React.CSSProperties = {
 export default function Results() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
 
-  const data = (location.state as any)?.evaluation ?? FALLBACK_DATA;
-  const { score, summary, strengths, improvements } = data;
+  const [loading, setLoading] = useState(!!id);
+  const [responseData, setResponseData] = useState<any>(null);
+
+  // Fetch interview response if ID is provided
+  useEffect(() => {
+    async function fetchResponse() {
+      if (id) {
+        setLoading(true);
+        try {
+          const data = await getInterviewResponse(id);
+          if (data) {
+            setResponseData(data);
+          } else {
+            console.error("Interview response not found");
+          }
+        } catch (error) {
+          console.error("Error fetching interview response:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+    fetchResponse();
+  }, [id]);
+
+  // Use fetched data or fallback to location state or default
+  const evaluationData = responseData?.evaluation || 
+                         (location.state as any)?.evaluation || 
+                         FALLBACK_DATA;
+
+  const interviewInfo = responseData?.interviewId || (location.state as any)?.interview;
+  
+  // Map the data structure
+  const data = {
+    score: evaluationData.totalScore,
+    summary: evaluationData.finalAssessment,
+    strengths: evaluationData.strengths || [],
+    improvements: evaluationData.areasForImprovement || [],
+    categoryScores: evaluationData.categoryScores || [],
+  };
+
+  const { score, summary, strengths, improvements, categoryScores } = data;
 
   const scoreColor =
     score >= 80 ? "#03b3c3" : score >= 60 ? "rgba(245,245,245,0.7)" : "#c0392b";
+
+  if (loading) {
+    return (
+      <div style={{
+        width: "100vw",
+        height: "100vh",
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        gap: "1rem"
+      }}>
+        <div style={{
+          width: "40px",
+          height: "40px",
+          border: "3px solid rgba(3,179,195,0.2)",
+          borderTop: "3px solid #03b3c3",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite"
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <p style={{
+          fontFamily: '"Quicksand", sans-serif',
+          color: "rgba(245,245,245,0.5)",
+          fontSize: "0.9rem"
+        }}>Loading results...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -282,6 +355,73 @@ export default function Results() {
               {summary}
             </p>
           </div>
+
+          {/* Category Scores */}
+          {categoryScores && categoryScores.length > 0 && (
+            <div style={{
+              marginTop: "2.5rem",
+              width: "100%",
+              maxWidth: "800px",
+            }}>
+              <h3 style={{
+                ...sectionTitle,
+                textAlign: "center",
+                marginBottom: "1.5rem",
+              }}>
+                Performance Breakdown
+              </h3>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "1rem",
+              }}>
+                {categoryScores.map((category: any, idx: number) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: "1.2rem",
+                      background: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.5rem",
+                    }}>
+                      <span style={{
+                        fontFamily: '"Bricolage Grotesque", sans-serif',
+                        fontSize: "0.9rem",
+                        fontWeight: 600,
+                        color: "#03b3c3",
+                      }}>
+                        {category.name}
+                      </span>
+                      <span style={{
+                        fontFamily: '"Bricolage Grotesque", sans-serif',
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: category.score >= 80 ? "#03b3c3" : category.score >= 60 ? "rgba(245,245,245,0.7)" : "#e2a03f",
+                      }}>
+                        {category.score}/100
+                      </span>
+                    </div>
+                    <p style={{
+                      fontFamily: '"Quicksand", sans-serif',
+                      fontSize: "0.85rem",
+                      color: "rgba(245,245,245,0.55)",
+                      lineHeight: 1.5,
+                      margin: 0,
+                    }}>
+                      {category.comment}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div
             style={{

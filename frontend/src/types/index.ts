@@ -1,5 +1,6 @@
 export interface Interview {
   id: string;
+  _id?: string; // MongoDB ID
   userId: string;
   role: string;
   type: string;

@@ -17,6 +17,7 @@ function App() {
       <Route path="/vapi-interview" element={<VapiInterview />} />
       <Route path="/vapi-interview/:id" element={<VapiInterview />} />
       <Route path="/results" element={<Results />} />
+      <Route path="/results/:id" element={<Results />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/about-us" element={<AboutUs />} />
     </Routes>

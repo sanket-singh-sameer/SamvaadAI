@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useVapi } from "../hooks/useVapi";
 import { getInterview } from "../services/interview.service";
+import { saveInterviewResponse } from "../services/interviewResponse.service";
 import type { Interview } from "../types";
 
 const MicIcon = () => (
@@ -65,6 +66,7 @@ export default function VapiInterview() {
   const [loading, setLoading] = useState(!location.state?.interview && !!id);
   const [conversationHistory, setConversationHistory] = useState<string[]>([]);
   const [autoStarted, setAutoStarted] = useState(false);
+  const [callStartTime, setCallStartTime] = useState<number | null>(null);
 
   // Initialize Vapi hook
   const {
@@ -94,17 +96,102 @@ export default function VapiInterview() {
     },
     onCallStart: () => {
       console.log("Vapi interview started");
+      setCallStartTime(Date.now());
     },
-    onCallEnd: () => {
+    onCallEnd: async () => {
       console.log("Vapi interview ended");
-      navigate("/results", {
-        state: {
-          interview,
-          transcript: conversationHistory,
-        },
-      });
+      
+      // Calculate duration
+      const duration = callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0;
+      
+      // Generate mock evaluation (you can extract this from Vapi messages if available)
+      const evaluation = {
+        totalScore: Math.floor(Math.random() * 30) + 70, // Random score 70-100
+        categoryScores: [
+          {
+            name: "Communication Skills" as const,
+            score: Math.floor(Math.random() * 30) + 70,
+            comment: "Clear and articulate responses with good structure.",
+          },
+          {
+            name: "Technical Knowledge" as const,
+            score: Math.floor(Math.random() * 30) + 70,
+            comment: "Demonstrated solid understanding of the technical concepts.",
+          },
+          {
+            name: "Problem Solving" as const,
+            score: Math.floor(Math.random() * 30) + 70,
+            comment: "Good approach to breaking down complex problems.",
+          },
+          {
+            name: "Cultural Fit" as const,
+            score: Math.floor(Math.random() * 30) + 70,
+            comment: "Values align well with team culture and goals.",
+          },
+          {
+            name: "Confidence and Clarity" as const,
+            score: Math.floor(Math.random() * 30) + 70,
+            comment: "Spoke confidently with clear explanations.",
+          },
+        ],
+        strengths: [
+          "Excellent communication throughout the interview",
+          "Strong technical knowledge in the required areas",
+          "Good problem-solving approach",
+        ],
+        areasForImprovement: [
+          "Could provide more specific examples from past experience",
+          "Consider being more concise in responses",
+        ],
+        finalAssessment:
+          "Strong candidate with good technical skills and communication abilities. Recommended for next round.",
+      };
+
+      // Save interview response to database
+      if (interview) {
+        const interviewId = interview.id || interview._id;
+        
+        if (!interviewId) {
+          console.error("No interview ID available");
+          navigate("/results", {
+            state: {
+              interview,
+              transcript: conversationHistory,
+              evaluation,
+            },
+          });
+          return;
+        }
+
+        const responseData = {
+          interviewId,
+          userId: interview.userId,
+          fullTranscript: conversationHistory,
+          evaluation,
+          duration,
+        };
+
+        const result = await saveInterviewResponse(responseData);
+        
+        if (result.success && result.data) {
+          // Navigate to results with response ID
+          navigate(`/results/${result.data._id}`);
+        } else {
+          console.error("Failed to save interview response");
+          // Navigate anyway with state
+          navigate("/results", {
+            state: {
+              interview,
+              transcript: conversationHistory,
+              evaluation,
+            },
+          });
+        }
+      }
     },
     onMessage: (message: any) => {
+      console.log("Vapi message:", message);
+      
       if (message.type === "transcript") {
         setConversationHistory((prev) => [...prev, message.text]);
       }
